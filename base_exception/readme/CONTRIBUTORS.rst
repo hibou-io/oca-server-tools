@@ -7,6 +7,7 @@
 * Mourad EL HADJ MIMOUNE <mourad.elhadj.mimoune@akretion.com>
 * Raphaël Reverdy <raphael.reverdy@akretion.com>
 * Iván Todorovich <ivan.todorovich@druidoo.io>
+* Jared Kipe <jared@hibou.io>
 
 * Tecnativa <tecnativa.com>
 

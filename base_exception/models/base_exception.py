@@ -10,6 +10,7 @@ import time
 from odoo import _, api, fields, models, osv
 from odoo.exceptions import UserError, ValidationError
 from odoo.tools.safe_eval import safe_eval
+from odoo.tools.safe_eval import time as wrapped_time
 
 
 class ExceptionRule(models.Model):
@@ -131,7 +132,7 @@ class BaseExceptionMethod(models.AbstractModel):
     @api.model
     def _exception_rule_eval_context(self, rec):
         return {
-            "time": time,
+            "time": wrapped_time,
             "self": rec,
             # object, obj: deprecated.
             # should be removed in future migrations

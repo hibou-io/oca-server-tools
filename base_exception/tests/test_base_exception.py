@@ -6,7 +6,7 @@ import logging
 
 from odoo import fields
 from odoo.exceptions import ValidationError
-from odoo.tests import common
+from odoo.tests import common, tagged
 
 from .common import setup_test_model
 from .purchase_test import LineTest, PurchaseTest
@@ -14,8 +14,7 @@ from .purchase_test import LineTest, PurchaseTest
 _logger = logging.getLogger(__name__)
 
 
-@common.at_install(False)
-@common.post_install(True)
+@tagged('post_install', '-at_install')
 class TestBaseException(common.SavepointCase):
     @classmethod
     def setUpClass(cls):
