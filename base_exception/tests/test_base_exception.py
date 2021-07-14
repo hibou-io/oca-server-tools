@@ -6,7 +6,7 @@ import logging
 
 from odoo import fields
 from odoo.exceptions import ValidationError
-from odoo.tests import common, tagged
+from odoo.tests import common
 
 from .common import setup_test_model
 from .purchase_test import LineTest, PurchaseTest
@@ -14,7 +14,7 @@ from .purchase_test import LineTest, PurchaseTest
 _logger = logging.getLogger(__name__)
 
 
-@tagged('post_install', '-at_install')
+@common.tagged("post_install", "-at_install")
 class TestBaseException(common.SavepointCase):
     @classmethod
     def setUpClass(cls):
@@ -26,6 +26,7 @@ class TestBaseException(common.SavepointCase):
         if "test_purchase_ids" not in cls.exception_rule._fields:
             field = fields.Many2many("base.exception.test.purchase")
             cls.exception_rule._add_field("test_purchase_ids", field)
+            cls.exception_rule._fields["test_purchase_ids"].depends_context = None
         cls.exception_confirm = cls.env["exception.rule.confirm"]
         cls.exception_rule._fields["model"].selection.append(
             ("base.exception.test.purchase", "Purchase Order")
@@ -40,7 +41,7 @@ class TestBaseException(common.SavepointCase):
                 "name": "No ZIP code on destination",
                 "sequence": 10,
                 "model": "base.exception.test.purchase",
-                "code": "if not obj.partner_id.zip: failed=True",
+                "code": "if not self.partner_id.zip: failed=True",
             }
         )
 
@@ -49,7 +50,7 @@ class TestBaseException(common.SavepointCase):
                 "name": "Min order except",
                 "sequence": 10,
                 "model": "base.exception.test.purchase",
-                "code": "if obj.amount_total <= 200.0: failed=True",
+                "code": "if self.amount_total <= 200.0: failed=True",
             }
         )
 

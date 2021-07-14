@@ -5,12 +5,11 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 import html
-import time
 
-from odoo import _, api, fields, models, osv
+from odoo import _, api, fields, models
 from odoo.exceptions import UserError, ValidationError
+from odoo.osv import expression
 from odoo.tools.safe_eval import safe_eval
-from odoo.tools.safe_eval import time as wrapped_time
 
 
 class ExceptionRule(models.Model):
@@ -69,10 +68,10 @@ class BaseExceptionMethod(models.AbstractModel):
 
     def _get_main_records(self):
         """
-            Used in case we check exceptions on a record but write these
-            exceptions on a parent record. Typical example is with
-            sale.order.line. We check exceptions on some sale order lines but
-            write these exceptions on the sale order, so they are visible.
+        Used in case we check exceptions on a record but write these
+        exceptions on a parent record. Typical example is with
+        sale.order.line. We check exceptions on some sale order lines but
+        write these exceptions on the sale order, so they are visible.
         """
         return self
 
@@ -113,7 +112,7 @@ class BaseExceptionMethod(models.AbstractModel):
         # Cumulate all the records to attach to the rule
         # before linking. We don't want to call "rule.write()"
         # which would:
-        # * write on write_date so lock the expection.rule
+        # * write on write_date so lock the exception.rule
         # * trigger the recomputation of "main_exception_id" on
         #   all the sale orders related to the rule, locking them all
         #   and preventing concurrent writes
@@ -132,15 +131,9 @@ class BaseExceptionMethod(models.AbstractModel):
     @api.model
     def _exception_rule_eval_context(self, rec):
         return {
-            "time": wrapped_time,
             "self": rec,
-            # object, obj: deprecated.
-            # should be removed in future migrations
             "object": rec,
             "obj": rec,
-            # copy context to prevent side-effects of eval
-            # should be deprecated too, accesible through self.
-            "context": self.env.context.copy(),
         }
 
     @api.model
@@ -153,7 +146,7 @@ class BaseExceptionMethod(models.AbstractModel):
             )  # nocopy allows to return 'result'
         except Exception as e:
             raise UserError(
-                _("Error when evaluating the exception.rule " "rule:\n %s \n(%s)")
+                _("Error when evaluating the exception.rule rule:\n %s \n(%s)")
                 % (rule.name, e)
             )
         return space.get("failed", False)
@@ -169,7 +162,7 @@ class BaseExceptionMethod(models.AbstractModel):
 
     def _detect_exceptions_by_py_code(self, rule):
         """
-            Find exceptions found on self.
+        Find exceptions found on self.
         """
         domain = self._get_base_domain()
         records = self.search(domain)
@@ -181,11 +174,11 @@ class BaseExceptionMethod(models.AbstractModel):
 
     def _detect_exceptions_by_domain(self, rule):
         """
-            Find exceptions found on self.
+        Find exceptions found on self.
         """
         base_domain = self._get_base_domain()
         rule_domain = rule._get_domain()
-        domain = osv.expression.AND([base_domain, rule_domain])
+        domain = expression.AND([base_domain, rule_domain])
         return self.search(domain)
 
 
@@ -234,7 +227,7 @@ class BaseExceptionModel(models.AbstractModel):
                 rec.exceptions_summary = False
 
     def _popup_exceptions(self):
-        action = self._get_popup_action().read()[0]
+        action = self._get_popup_action().sudo().read()[0]
         action.update(
             {
                 "context": {
