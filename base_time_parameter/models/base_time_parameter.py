@@ -6,7 +6,7 @@ from datetime import datetime
 
 from odoo import _, api, fields, models
 from odoo.exceptions import UserError
-
+from odoo.tools.safe_eval import safe_eval
 
 class TimeParameter(models.Model):
     _name = "base.time.parameter"
@@ -39,6 +39,7 @@ class TimeParameter(models.Model):
             ("json", "JSON"),
             ("record", "Record"),
             ("string", "Text"),
+            ("python", "Python"),
         ],
         required=True,
         default="float",
@@ -109,6 +110,8 @@ class TimeParameter(models.Model):
             return version.value_reference
         elif self.type == "string":
             return version.value
+        elif self.type == "python":
+            return safe_eval(version.value)
 
     _sql_constraints = [
         (
