@@ -13,10 +13,7 @@
                         <field name="code" />
                         <field name="model_id" />
                         <field name="type" />
-                        <field
-                            name="record_model"
-                            attrs="{'invisible': [('type', '!=', 'record')]}"
-                        />
+                        <field name="record_model" invisible="type != 'record'" />
                     </group>
                     <group string="Versions">
                         <field
@@ -27,18 +24,8 @@
                             <tree editable="bottom">
                                 <field name="date_from" />
                                 <field name="type" invisible="1" />
-                                <field
-                                    name="value"
-                                    attrs="{'column_invisible':[('parent.type', '=', 'record')]}"
-                                />
-                                <field
-                                    name="value_reference"
-                                    attrs="{'column_invisible':[
-                                        '|',
-                                        ('parent.type', '!=', 'record'),
-                                        ('parent.record_model', '!=', False),
-                                    ]}"
-                                />
+                                <field name="value" column_invisible="parent.type == 'record'" />
+                                <field name="value_reference" column_invisible="parent.type != 'record' or parent.record_model" />
                             </tree>
                         </field>
                     </group>
